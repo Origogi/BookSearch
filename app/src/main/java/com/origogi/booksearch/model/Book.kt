@@ -6,5 +6,5 @@ data class Book(
     val isbn13 : String,
     val price : String,
     val image : String,
-    val url : String
+    val url : String,
 )

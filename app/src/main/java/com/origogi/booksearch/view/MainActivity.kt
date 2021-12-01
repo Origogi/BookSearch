@@ -4,6 +4,7 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import androidx.activity.viewModels
 import androidx.databinding.DataBindingUtil
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.origogi.booksearch.R
 import com.origogi.booksearch.databinding.ActivityMainBinding
 import com.origogi.booksearch.viewmodel.MainViewModel
@@ -18,5 +19,9 @@ class MainActivity : AppCompatActivity() {
         binding = DataBindingUtil.setContentView(this, R.layout.activity_main)
         binding.lifecycleOwner = this
         binding.viewmodel = viewModel
+        binding.rvSearch.apply {
+            layoutManager = LinearLayoutManager(this.context)
+            adapter = RvAdapter()
+        }
     }
 }
