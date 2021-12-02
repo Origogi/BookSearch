@@ -8,25 +8,41 @@ import androidx.lifecycle.viewModelScope
 import com.origogi.booksearch.TAG
 import com.origogi.booksearch.model.Book
 import com.origogi.booksearch.model.RetrofitService
+import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
 
 class MainViewModel : ViewModel() {
 
-    private val _books : MutableLiveData<List<Book>> = MutableLiveData()
-    val books : LiveData<List<Book>>
+    private val _books: MutableLiveData<List<Book>> = MutableLiveData()
+    val books: LiveData<List<Book>>
         get() = _books
 
-    fun search(words: String) {
-        Log.d(TAG, "search $words")
+    fun search(words: List<String>, excludeWord: String) {
+        Log.d(TAG, "search $words $excludeWord")
 
         viewModelScope.launch {
             _books.value = emptyList()
 
-            val response =
-                RetrofitService.bookApi.getBooks(words, 1)
-            Log.d(TAG, "result $response")
-
-            _books.value = response.books
+            words.map {
+                async {
+                    RetrofitService.bookApi.getBooks(it, 1)
+                }
+            }.map {
+                it.await()
+            }.map {
+                it.books
+            }
+            .map { books ->
+                if (excludeWord.isNotBlank()) {
+                    books.filter {
+                        !it.title.lowercase().contains(excludeWord.lowercase())
+                    }
+                } else {
+                    books
+                }
+            }.forEach { books ->
+                _books.value = (_books.value ?: emptyList()) + books
+            }
         }
 
     }
