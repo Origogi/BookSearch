@@ -63,14 +63,15 @@ class MainViewModel : ViewModel() {
                     pageIndexerMap[word]!!.hasNextPage()
                 }
                 .map { word ->
-                    async {
+                    word to async {
                         RetrofitService.bookApi.getBooks(word, pageIndexerMap[word]!!.getNextPage())
                     }
                 }.map {
-                    it.await()
-                }.mapIndexed { i, response ->
-
-                    pageIndexerMap[includeWords[i]]!!.updateCount(
+                    val (word , job) = it
+                    word to job.await()
+                }.map {
+                    val (word , response) = it
+                    pageIndexerMap[word]!!.updateCount(
                         response.books.size,
                         response.total
                     )
@@ -100,6 +101,7 @@ class MainViewModel : ViewModel() {
         private var currentPage = 1
 
         fun hasNextPage(): Boolean {
+            Log.d(TAG, "$currentCount/$maxCount")
             return (currentCount < maxCount) || (currentCount == 0)
         }
 
