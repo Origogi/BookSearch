@@ -3,6 +3,9 @@
 <layout>
 
     <data>
+        <import type="android.view.View"/>
+        <import type="com.origogi.booksearch.ConstantsKt"/>
+
         <variable
             name="viewmodel"
             type="com.origogi.booksearch.viewmodel.MainViewModel" />
@@ -17,23 +20,33 @@
 
         <androidx.appcompat.widget.SearchView
             android:id="@+id/search_view"
+            setOnQueryTextListener="@{viewmodel}"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:backgroundTint="@color/purple_200"
             app:iconifiedByDefault="false"
             app:layout_constraintTop_toTopOf="parent"
-            setOnQueryTextListener="@{viewmodel}"
             app:queryHint="검색어를 입력하시오" />
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/rv_search"
+            bindState="@{viewmodel.state}"
+            bindItem="@{viewmodel.books}"
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_marginTop="8dp"
             android:layout_marginBottom="8dp"
-            bindItem="@{viewmodel.books}"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintTop_toBottomOf="@id/search_view" />
+
+        <ProgressBar
+            android:visibility="@{ viewmodel.showProcessInd ? View.VISIBLE : View.GONE}"
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            app:layout_constraintBottom_toBottomOf="@id/rv_search"
+            app:layout_constraintLeft_toLeftOf="@id/rv_search"
+            app:layout_constraintRight_toRightOf="@id/rv_search"
+            app:layout_constraintTop_toTopOf="@id/rv_search" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

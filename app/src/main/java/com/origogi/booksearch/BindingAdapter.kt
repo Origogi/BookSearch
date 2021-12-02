@@ -80,7 +80,17 @@ fun bindItem(recyclerView: RecyclerView, items: LiveData<List<Book>>) {
     val adapter = recyclerView.adapter
     if (adapter is RvAdapter) {
         items.value?.let {
-            adapter.update(it)
+            adapter.updateBooks(it)
+        }
+    }
+}
+
+@BindingAdapter("bindState")
+fun bindState(recyclerView: RecyclerView, state: LiveData<State>) {
+    val adapter = recyclerView.adapter
+    if (adapter is RvAdapter) {
+        state.value?.let {
+            adapter.updateState(it)
         }
     }
 }

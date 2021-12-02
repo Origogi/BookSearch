@@ -1,19 +1,27 @@
 package com.origogi.booksearch.view
 
+import android.os.SystemClock
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.databinding.DataBindingUtil
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.origogi.booksearch.R
+import com.origogi.booksearch.State
+import com.origogi.booksearch.TAG
 import com.origogi.booksearch.databinding.RvItemBookBinding
 import com.origogi.booksearch.model.Book
+import kotlinx.coroutines.*
 
-class RvAdapter(private val loadDataMore : () -> Unit) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
+class RvAdapter(private val loadDataMore: () -> Unit) :
+    RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
-    private var books : List<Book> = emptyList()
+    private var books: List<Book> = emptyList()
+    private var currentState = State.IDLE
+    private val throttle = Throttle(1000L)
 
-    fun update(newBooks : List<Book>) {
+    fun updateBooks(newBooks: List<Book>) {
 
         val diffCallback = Diff(books, newBooks)
         val diffResult = DiffUtil.calculateDiff(diffCallback)
@@ -21,6 +29,11 @@ class RvAdapter(private val loadDataMore : () -> Unit) : RecyclerView.Adapter<Re
         books = newBooks
 
         diffResult.dispatchUpdatesTo(this)
+    }
+
+    fun updateState(state: State) {
+        Log.d(TAG, "change state $currentState => $state" )
+        currentState = state
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
@@ -34,16 +47,19 @@ class RvAdapter(private val loadDataMore : () -> Unit) : RecyclerView.Adapter<Re
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         (holder as MyViewHolder).bind(books[position])
 
-        if (position == itemCount - 1) {
-            loadDataMore()
+        if (position > itemCount - 10 && currentState == State.IDLE) {
+            throttle.launch {
+                loadDataMore()
+            }
         }
     }
 
     override fun getItemCount() = books.size
 
 
-    private class MyViewHolder(private val binding : RvItemBookBinding) : RecyclerView.ViewHolder(binding.root) {
-        fun bind(book : Book) {
+    private class MyViewHolder(private val binding: RvItemBookBinding) :
+        RecyclerView.ViewHolder(binding.root) {
+        fun bind(book: Book) {
             binding.item = book
             binding.executePendingBindings()
         }
@@ -68,4 +84,30 @@ class RvAdapter(private val loadDataMore : () -> Unit) : RecyclerView.Adapter<Re
             return oldItems[oldItemPosition] == newItems[newItemPosition]
         }
     }
+
+
+    private class Throttle(
+        private val delayMs: Long,
+        private val coroutineScope: CoroutineScope = CoroutineScope(Dispatchers.Default)
+    ) {
+        private var job: Job? = null
+        private var nextMs: Long = 0
+        fun launch(func: () -> Unit) {
+            val current = SystemClock.uptimeMillis()
+            if (nextMs < current) {
+                nextMs = current + delayMs
+                func()
+                job?.cancel()
+            } else {
+                job?.cancel()
+                job = coroutineScope.launch {
+                    delay(nextMs - current)
+                    nextMs = SystemClock.uptimeMillis() + delayMs
+                    func()
+                }
+            }
+
+        }
+    }
+
 }

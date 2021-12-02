@@ -1,10 +1,8 @@
 package com.origogi.booksearch.viewmodel
 
 import android.util.Log
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.*
+import com.origogi.booksearch.State
 import com.origogi.booksearch.TAG
 import com.origogi.booksearch.model.Book
 import com.origogi.booksearch.model.RetrofitService
@@ -20,6 +18,22 @@ class MainViewModel : ViewModel() {
     private val _books: MutableLiveData<List<Book>> = MutableLiveData()
     val books: LiveData<List<Book>>
         get() = _books
+
+    private val _state: MutableLiveData<State> = MutableLiveData()
+    val state: LiveData<State>
+        get() = _state
+
+    private val _showProcessInd = MediatorLiveData<Boolean>().apply {
+        false
+        addSource(state) {
+            value = state.value == State.LOADING && (books.value ?: emptyList()).isEmpty()
+        }
+        addSource(books) {
+            value = state.value == State.LOADING && (books.value ?: emptyList()).isEmpty()
+        }
+    }
+    val showProcessInd : LiveData<Boolean>
+        get() = _showProcessInd
 
     fun search(words: List<String>, excWord: String) {
         Log.d(TAG, "search $words $excWord")
@@ -43,7 +57,7 @@ class MainViewModel : ViewModel() {
 
     private fun fetch() {
         viewModelScope.launch {
-
+            _state.value = State.LOADING
             includeWords
                 .filter { word ->
                     pageIndexerMap[word]!!.hasNextPage()
@@ -72,8 +86,11 @@ class MainViewModel : ViewModel() {
                         books
                     }
                 }.forEach { books ->
-                    _books.value = (_books.value ?: emptyList()) + books
+                    if (books.isNotEmpty()) {
+                        _books.value = (_books.value ?: emptyList()) + books
+                    }
                 }
+            _state.value = State.IDLE
         }
     }
 
