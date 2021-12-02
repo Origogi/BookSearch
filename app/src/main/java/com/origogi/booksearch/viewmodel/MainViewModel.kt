@@ -24,7 +24,7 @@ class MainViewModel : ViewModel() {
         get() = _state
 
     private val _showProcessInd = MediatorLiveData<Boolean>().apply {
-        false
+        value = false
         addSource(state) {
             value = state.value == State.LOADING && (books.value ?: emptyList()).isEmpty()
         }
