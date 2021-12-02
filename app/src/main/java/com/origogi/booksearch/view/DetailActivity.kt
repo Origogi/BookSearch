@@ -1,43 +1,35 @@
 package com.origogi.booksearch.view
 
-import android.app.Activity
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.util.Log
+
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.material.icons.filled.Menu
-import androidx.compose.material.icons.filled.MoreVert
+
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.Color.Companion.White
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.databinding.DataBindingUtil
 import coil.compose.rememberImagePainter
+import coil.size.OriginalSize
+import coil.size.Scale
+
 import com.origogi.booksearch.R
-import com.origogi.booksearch.TAG
-import com.origogi.booksearch.databinding.ActivityDetailBinding
-import com.origogi.booksearch.databinding.ActivityMainBinding
 import com.origogi.booksearch.dummyData
 import com.origogi.booksearch.model.BookDetail
+import com.origogi.booksearch.view.compose.LightGray
 import com.origogi.booksearch.viewmodel.DetailViewModel
-import com.origogi.booksearch.viewmodel.MainViewModel
-import java.util.*
 
 class DetailActivity : AppCompatActivity() {
 
@@ -72,48 +64,117 @@ fun DetailPage(bookDetail: BookDetail) {
         Scaffold(
         ) {
             Column(
-                modifier = Modifier.fillMaxWidth(),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 25.dp),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                Appbar()
-                Text(bookDetail.title, textAlign = TextAlign.Center,
-                    modifier = Modifier.padding(horizontal = 16.dp))
+                Text(
+                    bookDetail.title, textAlign = TextAlign.Center,
+                )
                 Image(
-                    painter = rememberImagePainter(bookDetail.image),
+                    painter = rememberImagePainter(
+                        data = bookDetail.image,
+                        builder = {
+                            crossfade(true)
+                            size(OriginalSize)
+                            scale(Scale.FIT)
+                            placeholder(R.drawable.placeholder)
+                        }
+                    ),
+                    contentScale = ContentScale.FillHeight,
                     contentDescription = null,
                     modifier = Modifier
                         .width(200.dp)
-                        .aspectRatio(300.0f / 350.0f)
-                        .clip(
-                            RoundedCornerShape(10.dp)
-                        )
+                        .aspectRatio(300f / 350f)
                 )
+
+                Text(
+                    "Author: ${bookDetail.authors}", textAlign = TextAlign.Center,
+                )
+                Text(
+                    bookDetail.year, textAlign = TextAlign.Center,
+                )
+                Surface(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .clip(RoundedCornerShape(7.dp)),
+                    color = LightGray
+                ) {
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.SpaceEvenly,
+                        modifier = Modifier.padding(vertical = 20.dp)
+                    ) {
+                        Rating(bookDetail.rating)
+                        Divider()
+                        Pages(bookDetail.pages)
+                        Divider()
+                        Price(bookDetail.price)
+                    }
+                }
+                Descriptions(bookDetail.desc)
+
             }
 
         }
     }
 }
 
-
 @Composable
-fun Appbar() {
-    val activity = (LocalContext.current as? Activity)
+fun Descriptions(desc: String) {
 
-    Row(
-        modifier = Modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.Start
-    ) {
-        IconButton(onClick = { activity?.finish() }) {
-            Icon(Icons.Default.ArrowBack, contentDescription = "")
-        }
-
+    Column {
+        Text(text = "Description")
+        Text(desc)
     }
 }
 
+@Composable
+fun Price(price: String) {
+    Row(
+        verticalAlignment = Alignment.Bottom
+    ) {
+        Text(price.replace("$", ""))
+        Text("$")
+    }
+}
+
+@Composable
+fun Pages(pages: String) {
+    Row(
+        verticalAlignment = Alignment.Bottom
+    ) {
+        Text(pages)
+        Text("pages")
+    }
+}
+
+@Composable
+private fun Rating(rating: String) {
+    Row(
+        verticalAlignment = Alignment.Bottom
+    ) {
+        Image(painter = painterResource(R.drawable.star), contentDescription = "")
+        Text(rating)
+        Text("/")
+        Text("5")
+    }
+}
+
+@Composable
+private fun Divider() {
+    Divider(
+        color = Color.Gray,
+        modifier = Modifier
+            .height(20.dp)
+            .width(1.dp)
+    )
+
+}
 
 @Composable
 @Preview
 fun DetailScreenPreview() {
-
     DetailPage(dummyData)
 }
