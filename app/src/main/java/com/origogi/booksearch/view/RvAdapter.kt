@@ -1,5 +1,6 @@
 package com.origogi.booksearch.view
 
+import android.content.Intent
 import android.os.SystemClock
 import android.util.Log
 import android.view.LayoutInflater
@@ -32,7 +33,7 @@ class RvAdapter(private val loadDataMore: () -> Unit) :
     }
 
     fun updateState(state: State) {
-        Log.d(TAG, "change state $currentState => $state" )
+        Log.d(TAG, "change state $currentState => $state")
         currentState = state
     }
 
@@ -61,6 +62,12 @@ class RvAdapter(private val loadDataMore: () -> Unit) :
         RecyclerView.ViewHolder(binding.root) {
         fun bind(book: Book) {
             binding.item = book
+            binding.root.setOnClickListener {
+                val intent = Intent(it.context, DetailActivity::class.java).apply {
+                    putExtra("isbn", book.isbn13)
+                }
+                it.context.startActivity(intent)
+            }
             binding.executePendingBindings()
         }
     }
