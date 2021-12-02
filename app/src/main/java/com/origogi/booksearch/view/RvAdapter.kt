@@ -9,7 +9,7 @@ import com.origogi.booksearch.R
 import com.origogi.booksearch.databinding.RvItemBookBinding
 import com.origogi.booksearch.model.Book
 
-class RvAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
+class RvAdapter(private val loadDataMore : () -> Unit) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
     private var books : List<Book> = emptyList()
 
@@ -33,6 +33,10 @@ class RvAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         (holder as MyViewHolder).bind(books[position])
+
+        if (position == itemCount - 1) {
+            loadDataMore()
+        }
     }
 
     override fun getItemCount() = books.size

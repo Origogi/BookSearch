@@ -21,7 +21,9 @@ class MainActivity : AppCompatActivity() {
         binding.viewmodel = viewModel
         binding.rvSearch.apply {
             layoutManager = LinearLayoutManager(this.context)
-            adapter = RvAdapter()
+            adapter = RvAdapter {
+                viewModel.loadMore()
+            }
         }
     }
 }
