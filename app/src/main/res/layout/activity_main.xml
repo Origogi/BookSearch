@@ -4,8 +4,6 @@
 
     <data>
         <import type="android.view.View"/>
-        <import type="com.origogi.booksearch.ConstantsKt"/>
-
         <variable
             name="viewmodel"
             type="com.origogi.booksearch.viewmodel.MainViewModel" />
