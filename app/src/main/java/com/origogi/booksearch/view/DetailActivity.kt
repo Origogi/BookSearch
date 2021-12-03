@@ -127,7 +127,6 @@ fun DetailPage(bookDetail: BookDetail) {
                 Descriptions(bookDetail.desc)
 
             }
-
         }
     }
 }
@@ -143,7 +142,7 @@ fun Descriptions(desc: String) {
         Text(
             desc, style = typography.body2,
             modifier = Modifier
-                .padding(top = 8.dp)
+                .padding(top = 8.dp, bottom = 16.dp)
                 .verticalScroll(scrollState)
         )
     }
