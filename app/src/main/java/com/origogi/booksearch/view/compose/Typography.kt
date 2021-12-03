@@ -16,7 +16,7 @@ private val Poppins = FontFamily(
 )
 
 
-val Typography = Typography(
+val MyTypography = Typography(
     h4 = TextStyle(
         fontFamily = Poppins,
         fontWeight = FontWeight.W600,
@@ -35,20 +35,24 @@ val Typography = Typography(
     subtitle1 = TextStyle(
         fontFamily = Poppins,
         fontWeight = FontWeight.W600,
-        fontSize = 16.sp
+        fontSize = 16.sp,
+        color = LightBlack
+
     ),
     subtitle2 = TextStyle(
         fontFamily = Poppins,
         fontWeight = FontWeight.W500,
-        fontSize = 14.sp
+        fontSize = 14.sp,
+
     ),
     body1 = TextStyle(
         fontFamily = Poppins,
-        fontSize = 14.sp
+        fontSize = 12.sp
     ),
     body2 = TextStyle(
         fontFamily = Poppins,
-        fontSize = 14.sp
+        fontSize = 12.sp,
+        color = LightBlack
     ),
     button = TextStyle(
         fontFamily = Poppins,
@@ -57,7 +61,8 @@ val Typography = Typography(
     ),
     caption = TextStyle(
         fontFamily = Poppins,
-        fontWeight = FontWeight.Normal,
+        fontWeight = FontWeight.W500,
+        color = LightBlack,
         fontSize = 12.sp
     ),
     overline = TextStyle(

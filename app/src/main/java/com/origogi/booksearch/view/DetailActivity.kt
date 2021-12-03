@@ -9,6 +9,7 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
+import androidx.compose.material.MaterialTheme.typography
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.livedata.observeAsState
@@ -18,6 +19,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -29,6 +31,7 @@ import com.origogi.booksearch.R
 import com.origogi.booksearch.dummyData
 import com.origogi.booksearch.model.BookDetail
 import com.origogi.booksearch.view.compose.LightGray
+import com.origogi.booksearch.view.compose.MyTypography
 import com.origogi.booksearch.viewmodel.DetailViewModel
 
 class DetailActivity : AppCompatActivity() {
@@ -60,7 +63,9 @@ fun DetailScreen(viewModel: DetailViewModel) {
 
 @Composable
 fun DetailPage(bookDetail: BookDetail) {
-    MaterialTheme {
+    MaterialTheme(
+        typography = MyTypography,
+    ) {
         Scaffold(
         ) {
             Column(
@@ -70,7 +75,9 @@ fun DetailPage(bookDetail: BookDetail) {
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 Text(
-                    bookDetail.title, textAlign = TextAlign.Center,
+                    bookDetail.title,
+                    textAlign = TextAlign.Center,
+                    style = MaterialTheme.typography.h6
                 )
                 Image(
                     painter = rememberImagePainter(
@@ -90,10 +97,14 @@ fun DetailPage(bookDetail: BookDetail) {
                 )
 
                 Text(
-                    "Author: ${bookDetail.authors}", textAlign = TextAlign.Center,
+                    "Author: ${bookDetail.authors}",
+                    textAlign = TextAlign.Center,
+                    style = MaterialTheme.typography.subtitle1
                 )
                 Text(
                     bookDetail.year, textAlign = TextAlign.Center,
+                    style = MaterialTheme.typography.caption
+
                 )
                 Surface(
                     modifier = Modifier
@@ -125,40 +136,51 @@ fun DetailPage(bookDetail: BookDetail) {
 fun Descriptions(desc: String) {
 
     Column {
-        Text(text = "Description")
-        Text(desc)
+        Text(
+            text = "Description", style = MaterialTheme.typography.subtitle2
+        )
+        Text(desc, style = MaterialTheme.typography.body2)
     }
 }
 
 @Composable
 fun Price(price: String) {
     Row(
-        verticalAlignment = Alignment.Bottom
+        verticalAlignment = Alignment.CenterVertically
     ) {
-        Text(price.replace("$", ""))
-        Text("$")
+        Text(price.replace("$", ""), style = MaterialTheme.typography.subtitle2)
+        Text(
+            " $", style = MaterialTheme.typography.caption
+        )
     }
 }
 
 @Composable
 fun Pages(pages: String) {
     Row(
-        verticalAlignment = Alignment.Bottom
+        verticalAlignment = Alignment.CenterVertically
     ) {
-        Text(pages)
-        Text("pages")
+        Text(pages, style = MaterialTheme.typography.subtitle2)
+        Text(
+            " pages", style = MaterialTheme.typography.caption
+        )
     }
 }
 
 @Composable
 private fun Rating(rating: String) {
     Row(
-        verticalAlignment = Alignment.Bottom
+        verticalAlignment = Alignment.CenterVertically
     ) {
-        Image(painter = painterResource(R.drawable.star), contentDescription = "")
-        Text(rating)
-        Text("/")
-        Text("5")
+        Image(
+            painter = painterResource(R.drawable.star),
+            modifier = Modifier.size(20.dp), contentDescription = ""
+        )
+        Text(rating, style = MaterialTheme.typography.subtitle2)
+        Text(" /", style = MaterialTheme.typography.caption)
+        Text(
+            "5", style = MaterialTheme.typography.caption
+        )
     }
 }
 
