@@ -47,11 +47,11 @@ val MyTypography = Typography(
     ),
     body1 = TextStyle(
         fontFamily = Poppins,
-        fontSize = 12.sp
+        fontSize = 14.sp
     ),
     body2 = TextStyle(
         fontFamily = Poppins,
-        fontSize = 12.sp,
+        fontSize = 14.sp,
         color = LightBlack
     ),
     button = TextStyle(

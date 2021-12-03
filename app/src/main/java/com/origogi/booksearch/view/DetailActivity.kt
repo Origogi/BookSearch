@@ -7,7 +7,9 @@ import androidx.activity.compose.setContent
 import androidx.activity.viewModels
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.*
 import androidx.compose.material.MaterialTheme.typography
 
@@ -15,11 +17,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -42,7 +42,6 @@ class DetailActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
 
         supportActionBar?.hide()
-
         viewModel.loadDataFromISBN(intent.getStringExtra("isbn")!!)
 
         setContent {
@@ -66,18 +65,18 @@ fun DetailPage(bookDetail: BookDetail) {
     MaterialTheme(
         typography = MyTypography,
     ) {
-        Scaffold(
-        ) {
+        Scaffold {
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(horizontal = 25.dp),
+                    .padding(horizontal = 32.dp),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 Text(
                     bookDetail.title,
                     textAlign = TextAlign.Center,
-                    style = MaterialTheme.typography.h6
+                    style = typography.h6,
+                    modifier = Modifier.padding(top = 16.dp)
                 )
                 Image(
                     painter = rememberImagePainter(
@@ -99,17 +98,18 @@ fun DetailPage(bookDetail: BookDetail) {
                 Text(
                     "Author: ${bookDetail.authors}",
                     textAlign = TextAlign.Center,
-                    style = MaterialTheme.typography.subtitle1
+                    style = typography.subtitle1
                 )
                 Text(
                     bookDetail.year, textAlign = TextAlign.Center,
-                    style = MaterialTheme.typography.caption
-
+                    style = typography.caption,
+                    modifier = Modifier.padding(top = 4.dp)
                 )
                 Surface(
+                    shape = RoundedCornerShape(15.dp),
                     modifier = Modifier
                         .fillMaxWidth()
-                        .clip(RoundedCornerShape(7.dp)),
+                        .padding(vertical = 16.dp),
                     color = LightGray
                 ) {
                     Row(
@@ -134,12 +134,18 @@ fun DetailPage(bookDetail: BookDetail) {
 
 @Composable
 fun Descriptions(desc: String) {
+    val scrollState = rememberScrollState()
 
     Column {
         Text(
-            text = "Description", style = MaterialTheme.typography.subtitle2
+            text = "Description", style = typography.subtitle2
         )
-        Text(desc, style = MaterialTheme.typography.body2)
+        Text(
+            desc, style = typography.body2,
+            modifier = Modifier
+                .padding(top = 8.dp)
+                .verticalScroll(scrollState)
+        )
     }
 }
 
@@ -148,9 +154,9 @@ fun Price(price: String) {
     Row(
         verticalAlignment = Alignment.CenterVertically
     ) {
-        Text(price.replace("$", ""), style = MaterialTheme.typography.subtitle2)
+        Text(price.replace("$", ""), style = typography.subtitle2)
         Text(
-            " $", style = MaterialTheme.typography.caption
+            " $", style = typography.caption,
         )
     }
 }
@@ -160,9 +166,9 @@ fun Pages(pages: String) {
     Row(
         verticalAlignment = Alignment.CenterVertically
     ) {
-        Text(pages, style = MaterialTheme.typography.subtitle2)
+        Text(pages, style = typography.subtitle2)
         Text(
-            " pages", style = MaterialTheme.typography.caption
+            " pages", style = typography.caption
         )
     }
 }
@@ -176,10 +182,10 @@ private fun Rating(rating: String) {
             painter = painterResource(R.drawable.star),
             modifier = Modifier.size(20.dp), contentDescription = ""
         )
-        Text(rating, style = MaterialTheme.typography.subtitle2)
-        Text(" /", style = MaterialTheme.typography.caption)
+        Text("${rating}.0", style = typography.subtitle2)
+        Text(" /", style = typography.caption)
         Text(
-            "5", style = MaterialTheme.typography.caption
+            "5", style = typography.caption
         )
     }
 }
