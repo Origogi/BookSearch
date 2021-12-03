@@ -5,7 +5,6 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.origogi.booksearch.State
 import com.origogi.booksearch.TAG
 import com.origogi.booksearch.model.BookDetail
 import com.origogi.booksearch.model.RetrofitService
