@@ -71,15 +71,12 @@ fun DetailScreen(viewModel: DetailViewModel) {
 
 @Composable
 fun LoadingPage() {
-
     Box(
         modifier = Modifier.fillMaxSize(),
         contentAlignment = Alignment.Center
     ) {
         CircularProgressIndicator()
-
     }
-
 }
 
 @Composable
