@@ -39,8 +39,8 @@
 
         <ProgressBar
             android:visibility="@{ viewmodel.showProcessInd ? View.VISIBLE : View.GONE}"
-            android:layout_width="20dp"
-            android:layout_height="20dp"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
             app:layout_constraintBottom_toBottomOf="@id/rv_search"
             app:layout_constraintLeft_toLeftOf="@id/rv_search"
             app:layout_constraintRight_toRightOf="@id/rv_search"
