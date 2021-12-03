@@ -6,7 +6,9 @@ import com.origogi.booksearch.State
 import com.origogi.booksearch.TAG
 import com.origogi.booksearch.model.Book
 import com.origogi.booksearch.model.RetrofitService
+import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.async
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 class MainViewModel : ViewModel() {
@@ -22,6 +24,21 @@ class MainViewModel : ViewModel() {
     private val _state: MutableLiveData<State> = MutableLiveData()
     val state: LiveData<State>
         get() = _state
+
+    private val _errorMessage: MutableLiveData<String> = MutableLiveData()
+    val errorMessage: LiveData<String>
+        get() = _errorMessage
+
+    private val handler = CoroutineExceptionHandler { _, exception ->
+        Log.e(TAG,"$exception")
+        _state.value = State.IDLE
+
+        viewModelScope.launch {
+            _errorMessage.value = exception.message
+            delay(1000)
+            _errorMessage.value = ""
+        }
+    }
 
     private val _showProcessInd = MediatorLiveData<Boolean>().apply {
         value = false
@@ -56,7 +73,7 @@ class MainViewModel : ViewModel() {
     }
 
     private fun fetch() {
-        viewModelScope.launch {
+        viewModelScope.launch(handler) {
             _state.value = State.LOADING
             includeWords
                 .filter { word ->

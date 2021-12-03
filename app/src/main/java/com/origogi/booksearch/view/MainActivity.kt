@@ -2,8 +2,10 @@ package com.origogi.booksearch.view
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.databinding.DataBindingUtil
+import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.origogi.booksearch.R
 import com.origogi.booksearch.databinding.ActivityMainBinding
@@ -25,5 +27,11 @@ class MainActivity : AppCompatActivity() {
                 viewModel.loadMore()
             }
         }
+
+        viewModel.errorMessage.observe(this, { msg ->
+            if (msg.isNotEmpty()) {
+                Toast.makeText(this, msg, Toast.LENGTH_SHORT).show()
+            }
+        })
     }
 }

@@ -2,7 +2,6 @@ package com.origogi.booksearch.view
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
 import androidx.compose.foundation.Image
@@ -12,6 +11,8 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.*
 import androidx.compose.material.MaterialTheme.typography
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Close
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.livedata.observeAsState
@@ -26,7 +27,6 @@ import androidx.compose.ui.unit.dp
 import coil.compose.rememberImagePainter
 import coil.size.OriginalSize
 import coil.size.Scale
-
 import com.origogi.booksearch.R
 import com.origogi.booksearch.dummyData
 import com.origogi.booksearch.model.BookDetail
@@ -53,82 +53,120 @@ class DetailActivity : AppCompatActivity() {
 @Composable
 fun DetailScreen(viewModel: DetailViewModel) {
     val bookDetail = viewModel.bookDetail.observeAsState().value
+    val errorMessage = viewModel.errorMessage.observeAsState().value
 
-    if (bookDetail != null) {
-        DetailPage(bookDetail)
+    MaterialTheme(
+        typography = MyTypography,
+    ) {
+        if (!errorMessage.isNullOrEmpty()) {
+            ErrorPage(errorMessage)
+        } else if (bookDetail != null) {
+            DetailPage(bookDetail)
+
+        } else {
+            LoadingPage()
+        }
+    }
+}
+
+@Composable
+fun LoadingPage() {
+
+    Box(
+        modifier = Modifier.fillMaxSize(),
+        contentAlignment = Alignment.Center
+    ) {
+        CircularProgressIndicator()
+
+    }
+
+}
+
+@Composable
+fun ErrorPage(message: String) {
+
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .fillMaxHeight(),
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Icon(Icons.Filled.Close, "", modifier = Modifier.size(50.dp))
+        Text(
+            text = message, style = typography.caption,
+            textAlign = TextAlign.Center
+        )
     }
 
 }
 
 @Composable
 fun DetailPage(bookDetail: BookDetail) {
-    MaterialTheme(
-        typography = MyTypography,
-    ) {
-        Scaffold {
-            Column(
+    Scaffold {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 32.dp),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Text(
+                bookDetail.title,
+                textAlign = TextAlign.Center,
+                style = typography.h6,
+                modifier = Modifier.padding(top = 16.dp)
+            )
+            Image(
+                painter = rememberImagePainter(
+                    data = bookDetail.image,
+                    builder = {
+                        crossfade(true)
+                        size(OriginalSize)
+                        scale(Scale.FIT)
+                        placeholder(R.drawable.placeholder)
+                    }
+                ),
+                contentScale = ContentScale.FillHeight,
+                contentDescription = null,
+                modifier = Modifier
+                    .width(200.dp)
+                    .aspectRatio(300f / 350f)
+            )
+
+            Text(
+                "Author: ${bookDetail.authors}",
+                textAlign = TextAlign.Center,
+                style = typography.subtitle1
+            )
+            Text(
+                bookDetail.year, textAlign = TextAlign.Center,
+                style = typography.caption,
+                modifier = Modifier.padding(top = 4.dp)
+            )
+            Surface(
+                shape = RoundedCornerShape(15.dp),
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(horizontal = 32.dp),
-                horizontalAlignment = Alignment.CenterHorizontally
+                    .padding(vertical = 16.dp),
+                color = LightGray
             ) {
-                Text(
-                    bookDetail.title,
-                    textAlign = TextAlign.Center,
-                    style = typography.h6,
-                    modifier = Modifier.padding(top = 16.dp)
-                )
-                Image(
-                    painter = rememberImagePainter(
-                        data = bookDetail.image,
-                        builder = {
-                            crossfade(true)
-                            size(OriginalSize)
-                            scale(Scale.FIT)
-                            placeholder(R.drawable.placeholder)
-                        }
-                    ),
-                    contentScale = ContentScale.FillHeight,
-                    contentDescription = null,
-                    modifier = Modifier
-                        .width(200.dp)
-                        .aspectRatio(300f / 350f)
-                )
-
-                Text(
-                    "Author: ${bookDetail.authors}",
-                    textAlign = TextAlign.Center,
-                    style = typography.subtitle1
-                )
-                Text(
-                    bookDetail.year, textAlign = TextAlign.Center,
-                    style = typography.caption,
-                    modifier = Modifier.padding(top = 4.dp)
-                )
-                Surface(
-                    shape = RoundedCornerShape(15.dp),
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(vertical = 16.dp),
-                    color = LightGray
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.SpaceEvenly,
+                    modifier = Modifier.padding(vertical = 20.dp)
                 ) {
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.SpaceEvenly,
-                        modifier = Modifier.padding(vertical = 20.dp)
-                    ) {
-                        Rating(bookDetail.rating)
-                        Divider()
-                        Pages(bookDetail.pages)
-                        Divider()
-                        Price(bookDetail.price)
-                    }
+                    Rating(bookDetail.rating)
+                    Divider()
+                    Pages(bookDetail.pages)
+                    Divider()
+                    Price(bookDetail.price)
                 }
-                Descriptions(bookDetail.desc)
-
             }
+            Descriptions(bookDetail.desc)
+
         }
     }
+
 }
 
 @Composable
@@ -202,6 +240,18 @@ private fun Divider() {
 
 @Composable
 @Preview
-fun DetailScreenPreview() {
+fun DetailPagePreview() {
     DetailPage(dummyData)
+}
+
+@Composable
+@Preview
+fun ErrorPagePreview() {
+    ErrorPage("error occured!!")
+}
+
+@Composable
+@Preview
+fun LoadingPreview() {
+    LoadingPage()
 }
