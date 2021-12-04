@@ -5,6 +5,14 @@
 
 ## Screenshot
 
+<div align="center">
+
+<img height="500" alt="iShot2021-12-04 18 44 15" src="https://user-images.githubusercontent.com/35194820/144705245-82432b17-8d2b-41d4-ad75-6de3e1dd2632.png">
+<img height="500" alt="iShot2021-12-04 18 44 06" src="https://user-images.githubusercontent.com/35194820/144705243-0407f32f-2e52-4b05-9a89-bc143ee14f3f.png">
+<img height="500" src="https://user-images.githubusercontent.com/35194820/144705241-bdf94f3b-a044-4e4d-94c8-338b2965069a.gif">
+</div>
+
+
 ## Tech stack & Open-source libraries
 
 - [Kotlin](https://kotlinlang.org/) based, [Coroutines](https://github.com/Kotlin/kotlinx.coroutines)
