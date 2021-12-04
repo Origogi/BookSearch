@@ -13,13 +13,16 @@ import kotlinx.coroutines.launch
 
 class MainViewModel : ViewModel() {
 
-    private var includeWords: List<String> = emptyList()
     private var excludeWord = ""
     private val pageIndexerMap = mutableMapOf<String, PageIndexer>()
 
-    private val _books: MutableLiveData<List<Book>> = MutableLiveData()
-    val books: LiveData<List<Book>>
-        get() = _books
+    private val _books: MutableLiveData<LinkedHashSet<Book>> = MutableLiveData()
+    val books: LiveData<List<Book>> = MediatorLiveData<List<Book>>().apply {
+        value = emptyList()
+        addSource(_books) {
+            value = _books.value?.toList()
+        }
+    }
 
     private val _state: MutableLiveData<State> = MutableLiveData()
     val state: LiveData<State>
@@ -28,6 +31,18 @@ class MainViewModel : ViewModel() {
     private val _errorMessage: MutableLiveData<String> = MutableLiveData()
     val errorMessage: LiveData<String>
         get() = _errorMessage
+
+    private val _showProcessInd = MediatorLiveData<Boolean>().apply {
+        value = false
+        addSource(_state) {
+            value = _state.value == State.LOADING && (_books.value ?: emptyList()).isEmpty()
+        }
+        addSource(_books) {
+            value = _state.value == State.LOADING && (_books.value ?: emptyList()).isEmpty()
+        }
+    }
+    val showProcessInd : LiveData<Boolean>
+        get() = _showProcessInd
 
     private val handler = CoroutineExceptionHandler { _, exception ->
         Log.e(TAG,"$exception")
@@ -40,30 +55,18 @@ class MainViewModel : ViewModel() {
         }
     }
 
-    private val _showProcessInd = MediatorLiveData<Boolean>().apply {
-        value = false
-        addSource(state) {
-            value = state.value == State.LOADING && (books.value ?: emptyList()).isEmpty()
-        }
-        addSource(books) {
-            value = state.value == State.LOADING && (books.value ?: emptyList()).isEmpty()
-        }
-    }
-    val showProcessInd : LiveData<Boolean>
-        get() = _showProcessInd
 
     fun search(words: List<String>, excWord: String) {
         Log.d(TAG, "search $words $excWord")
         viewModelScope.launch {
             pageIndexerMap.clear()
-            includeWords = words
 
-            includeWords.forEach {
+            words.forEach {
                 pageIndexerMap[it] = PageIndexer()
             }
 
             excludeWord = excWord
-            _books.value = emptyList()
+            _books.value = linkedSetOf()
             fetch()
         }
     }
@@ -75,7 +78,10 @@ class MainViewModel : ViewModel() {
     private fun fetch() {
         viewModelScope.launch(handler) {
             _state.value = State.LOADING
-            includeWords
+
+            val beforeSize = _books.value?.size ?:0
+            pageIndexerMap
+                .keys
                 .filter { word ->
                     pageIndexerMap[word]!!.hasNextPage()
                 }
@@ -105,10 +111,16 @@ class MainViewModel : ViewModel() {
                     }
                 }.forEach { books ->
                     if (books.isNotEmpty()) {
-                        _books.value = (_books.value ?: emptyList()) + books
+                        _books.value = (_books.value ?: linkedSetOf()).apply {
+                            addAll(books)
+                        }
                     }
                 }
             _state.value = State.IDLE
+
+            val afterSize = _books.value?.size ?:0
+
+            Log.d(TAG, "size changed $beforeSize => $afterSize")
         }
     }
 
