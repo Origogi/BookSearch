@@ -12,7 +12,6 @@
 <img height="500" src="https://user-images.githubusercontent.com/35194820/144705241-bdf94f3b-a044-4e4d-94c8-338b2965069a.gif">
 </div>
 
-
 ## Tech stack & Open-source libraries
 
 - [Kotlin](https://kotlinlang.org/) based, [Coroutines](https://github.com/Kotlin/kotlinx.coroutines)
@@ -27,6 +26,16 @@
   - [Retrofit2 & OkHttp3](https://github.com/square/retrofit) - construct the REST APIs and paging network data.
   - [Glide](https://github.com/bumptech/glide) - loading images.
   - [Coil](https://github.com/coil-kt/coil) - loading images for Compose
+
+### Compose
+
+Detail view was made by `Android Compose`
+
+<div align="center">
+
+<img height="500" alt="111" src="https://user-images.githubusercontent.com/35194820/144705479-8088da58-bdbc-4681-befa-fc719081f5ff.PNG">
+
+</div>
 
 ## Open API
 
